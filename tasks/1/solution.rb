@@ -14,7 +14,7 @@ MELTING_AND_BOILING_POINTS_IN_CELSIUS = {
 
 def convert_between_temperature_units(degrees, input_unit, output_unit)
   slope, intercept = TEMPERATURE_CONVERSION_CHART[input_unit][output_unit]
-  (degrees * slope + intercept).round(2)
+  (degrees * slope + intercept)
 end
 
 def melting_point_of_substance(substance, unit) 
