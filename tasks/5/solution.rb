@@ -11,16 +11,14 @@ class DataModel
   end
 
   def self.attributes(*attrs)
-    if attrs.empty?
-      @attributes
-    else
-      attrs.each do |attr|
-        define_singleton_method("find_by_#{attr}") { |value| where([[attr, value]].to_h) }
-        define_singleton_method("find_by_id") { |value| where([[attr, value]].to_h) }
-        attr_accessor attr
-      end
-      @attributes = attrs
-    end
+    return @attributes if attrs.empty?
+
+    @attributes = attrs + [:id]
+
+     @attributes.each do |attr|
+       define_singleton_method("find_by_#{attr}") { |value| where([[attr, value]].to_h) }
+       attr_accessor attr
+     end
   end
 
   def self.data_store(store = nil)
@@ -28,10 +26,15 @@ class DataModel
   end
 
   def self.where(kwargz)
+    kwargz.keys.reject { |arg| @attributes.include? arg }.each do |arg|
+      raise UnknownAttributeError.new("Unknown attribute #{arg}")
+    end
+
     @data_store.find(kwargz).map { |found| new(found) }
   end
   
   def ==(other)
+    return self.equal?(other) if id.nil?
     res = (other.instance_of?(self.class) && @id == other.id) ? true : false
     res || (object_id == other.object_id) ? true : false
   end
@@ -52,6 +55,9 @@ class DataModel
   end
 
   class DeleteUnsavedRecordError < StandardError
+  end
+
+  class UnknownAttributeError < StandardError
   end
 end
 
