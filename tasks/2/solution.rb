@@ -11,8 +11,8 @@ class Hash
   end
 
   def reshape(shape)
-    shape.keys.map do |key|
-      if shape[key].class != Hash
+    shape.map do |key, value|
+      if value.is_a? String
         [key, fetch_deep(shape[key])]
       else
         [key, reshape(shape[key])]
@@ -23,6 +23,6 @@ end
 
 class Array
   def reshape(shape)
-    map { |x| x.reshape(shape) }
+    map { |element| element.reshape(shape) }
   end
 end
