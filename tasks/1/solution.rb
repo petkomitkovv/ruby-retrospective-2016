@@ -17,9 +17,9 @@ end
 MELTING_AND_BOILING_POINTS = {
   'water' => { melting_point: 0, boiling_point: 100 },
   'ethanol' => { melting_point: -114, boiling_point: 78.37 },
-  'gold' => { melting_point: 1064, boiling_point: 2700 },
-  'silver' => { melting_point: 961.8, boiling_point: 2162 },
-  'copper' => { melting_point: 1085, boiling_point: 2567 },
+  'gold' => { melting_point: 1_064, boiling_point: 2_700 },
+  'silver' => { melting_point: 961.8, boiling_point: 2_162 },
+  'copper' => { melting_point: 1_085, boiling_point: 2_567 },
 }
 
 def convert_between_temperature_units(degrees, input_unit, output_unit)
