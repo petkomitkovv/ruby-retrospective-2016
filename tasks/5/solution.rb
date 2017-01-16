@@ -46,7 +46,7 @@ class DataModel
 
   def delete
     raise DeleteUnsavedRecordError if @id.nil?
-    self.class.data_store.delete_by_id(@id)
+    self.class.data_store.delete(id: id)
     @id = nil
 
   end
