@@ -1,13 +1,11 @@
 class Hash
-  def fetch_deep(path)
-    k = path.split('.')
-    cur = self
-    while cur && k.any?
-      return nil unless cur.respond_to?(:fetch)
-      cur = cur.class == Array ? cur[k[0].to_i] : cur[k[0]] || cur[k[0].to_sym]
-      k.shift
-    end
-    cur
+  def fetch_deep(key_path)
+    key, nested_key_path = key_path.split('.', 2)
+    value = self[key.to_sym] || self[key.to_s]
+
+    return value unless nested_key_path
+    
+    value.fetch_deep(nested_key_path) if value
   end
 
   def reshape(shape)
@@ -24,5 +22,12 @@ end
 class Array
   def reshape(shape)
     map { |element| element.reshape(shape) }
+  end
+
+  def fetch_deep(key_path)
+    key, nested_key_path = key_path.split('.', 2)
+    element = self[key.to_i]
+
+    element.fetch_deep(nested_key_path) if element
   end
 end
