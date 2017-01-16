@@ -4,16 +4,16 @@ class Hash
     value = self[key.to_sym] || self[key.to_s]
 
     return value unless nested_key_path
-    
+
     value.fetch_deep(nested_key_path) if value
   end
 
   def reshape(shape)
     shape.map do |key, value|
       if value.is_a? String
-        [key, fetch_deep(shape[key])]
+        [key, fetch_deep(value)]
       else
-        [key, reshape(shape[key])]
+        [key, reshape(value)]
       end
     end.to_h
   end

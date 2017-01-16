@@ -1,12 +1,12 @@
 class Option
   attr_reader :name, :short_name
 
-  def initialize(short_name, name, description, block, placeholder = "")
+  def initialize(short_name, name, description, block, pholder = "")
     @short_name = short_name
     @name = name
     @description = description
     @block = block
-    @pholder = placeholder
+    @pholder = pholder
   end
 
   def parse(command_runner, param = true)
@@ -80,8 +80,8 @@ class CommandParser
 
   def help
     help_str = "Usage: #{@command_name}"
-    @arguments.each { |arg| help_str << " " << arg.to_s }
-    @options.each { |opt| help_str << "\n" << opt.to_s }
+    @arguments.each { |arg| help_str << " #{arg}" }
+    @options.each { |opt| help_str << "\n#{opt}" }
     help_str
   end
 end
