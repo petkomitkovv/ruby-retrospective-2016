@@ -23,12 +23,12 @@ MELTING_AND_BOILING_POINTS = {
 }
 
 def convert_between_temperature_units(degrees, input_unit, output_unit)
-  degrees_in_celsius = degrees_to_celsius(from_degrees, input_unit)
+  degrees_in_celsius = degrees_to_celsius(degrees, input_unit)
   degrees_from_celsius(degrees_in_celsius, output_unit)
 end
 
 def melting_point_of_substance(substance, unit) 
-  degrees_from_celsius(SUBSTANCES[substance][:melting_point], unit)
+  degrees_from_celsius(MELTING_AND_BOILING_POINTS[substance][:melting_point], unit)
 end
 
 def boiling_point_of_substance(substance, unit)
