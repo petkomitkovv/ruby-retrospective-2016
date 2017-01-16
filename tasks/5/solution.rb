@@ -16,10 +16,10 @@ class DataModel
     else
       attrs.each do |attr|
         define_singleton_method("find_by_#{attr}") { |value| where([[attr, value]].to_h) }
+        define_singleton_method("find_by_id") { |value| where([[attr, value]].to_h) }
         attr_accessor attr
       end
       @attributes = attrs
-      @ids = {}
     end
   end
 
@@ -28,8 +28,7 @@ class DataModel
   end
 
   def self.where(kwargz)
-    found = @data_store.find(kwargz)
-    found.map { |k| @ids[k] }.map { |s| ObjectSpace._id2ref(s) }
+    @data_store.find(kwargz).map { |found| new(found) }
   end
   
   def ==(other)
@@ -42,7 +41,6 @@ class DataModel
     hash = self.class.attributes
                .map { |attr| [attr, instance_variable_get("@#{attr}")] }.to_h
     self.class.data_store.create(hash)
-    self.class.ids[hash] = object_id
     self
   end
 
@@ -53,51 +51,7 @@ class DataModel
 
   end
 
-  def self.ids
-    @ids.nil? ? nil : @ids
-  end
-
   class DeleteUnsavedRecordError < StandardError
-  end
-end
-
-class ArrayStore
-  attr_reader :storage
-
-  def initialize
-    @storage = []
-  end
-
-  def create(kwargz)
-    @storage[@storage.size] = kwargz
-  end
-
-  def find(kwargz)
-    @storage.map do |val|
-      if val != nil
-        kwargz.all? { |k, v| val[k] == v } ? val : nil
-      end
-    end.compact
-  end
-
-  def update(id, attrs)
-    @storage[id - 1] == attrs
-  end
-
-  def delete(kwargz)
-    @storage.each_with_index do |value, index|
-      if value != nil
-        kwargz.all? { |k, v| value[k] == v } ? @storage[index] = nil : nil
-      end
-    end
-  end
-
-  def delete_by_id(id)
-    @storage[id - 1] = nil
-  end
-
-  def next_id
-    @storage.size + 1
   end
 end
 
@@ -106,37 +60,68 @@ class HashStore
 
   def initialize
     @storage = {}
-  end
-
-  def find(kwargz)
-    @storage.map do |_, entry|
-      if entry != nil
-        kwargz.all? { |k, v| entry[k] == v } ? entry : nil
-      end
-    end.compact
-  end
-
-  def create(kwargz)
-    @storage[@storage.size] = kwargz
-  end
-
-  def update(id, attrs)
-    @storage[id - 1] = attrs
-  end
-
-  def delete(kwargz)
-    @storage.each do |key, value|
-      if value != nil
-        kwargz.all? { |k, v| value[k] == v } ? @storage[key] = nil : nil
-      end
-    end
-  end
-
-  def delete_by_id(id)
-    @storage[id - 1] = nil
+    @id_counter = 0
   end
 
   def next_id
-    @storage.size + 1
+    @id_counter += 1
+  end
+
+  def create(record)
+    @storage[record[:id]] = record
+  end
+
+  def find(query)
+    @storage.values.select do |record|
+      query.all? { |key, value| record[key] == value }
+    end
+  end
+
+  def delete(query)
+    find(query).each { |record| @storage.delete(record[:id]) }
+  end
+
+  def update(id, record)
+    return unless @storage.key? id
+
+    @storage[id] = record
+  end
+end
+
+class ArrayStore
+  attr_reader :storage
+
+  def initialize
+    @storage = []
+    @id_counter = 0
+  end
+
+  def next_id
+    @id_counter += 1
+  end
+
+  def create(record)
+    @storage << record
+  end
+
+  def find(query)
+    @storage.select { |record| match_record? query, record }
+  end
+
+  def delete(query)
+    @storage.reject! { |record| match_record? query, record }
+  end
+
+  def update(id, record)
+    index = @storage.find_index { |record| record[:id] == id }
+    return unless index
+
+    @storage[index] = record
+  end
+
+  private
+
+  def match_record?(query, record)
+    query.all? { |key, value| record[key] == value }
   end
 end
