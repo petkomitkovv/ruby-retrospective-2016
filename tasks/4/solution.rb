@@ -1,13 +1,5 @@
 RSpec.describe 'Version' do
   describe '#initialize' do
-    it 'does not raise error with empty string' do
-      expect { Version.new '' }.to_not raise_error
-    end
-
-    it 'does not raise error with valid version' do
-      expect { Version.new '1.2.3' }.to_not raise_error
-    end
-
     it 'raises error with invalid version' do
       version = '1..2'
       expect { Version.new version }.to raise_error(
@@ -16,40 +8,27 @@ RSpec.describe 'Version' do
       )
     end
 
-    it 'does not raise error with no arguments' do
+    it 'does not raise error with valid version' do
       expect { Version.new }.to_not raise_error
-    end
-
-    it 'does not raise error with version instance' do
       expect { Version.new Version.new }.to_not raise_error
+      expect { Version.new '' }.to_not raise_error
+      expect { Version.new '1.2.3' }.to_not raise_error
     end
   end
 
   describe '#<' do
     context 'when versions have equal length' do
-      it 'is true for smaller version' do
+      it 'compares correctly' do
         expect(Version.new('1.2')).to be < Version.new('1.3')
-      end
-
-      it 'is false for larger version' do
         expect(Version.new('1.3')).to_not be < Version.new('1.2')
-      end
-
-      it 'is false for equal versions' do
         expect(Version.new('1.2')).to_not be < Version.new('1.2')
       end
     end
 
     context 'when versions have different length' do
-      it 'is true for smaller version' do
+      it 'compares correctly' do
         expect(Version.new('1.3')).to be < Version.new('1.3.1')
-      end
-
-      it 'is false for larger version' do
         expect(Version.new('1.3.1')).to_not be < Version.new('1.3')
-      end
-
-      it 'is false for equal versions' do
         expect(Version.new('1.3')).to_not be < Version.new('1.3.0')
       end
     end
@@ -57,29 +36,17 @@ RSpec.describe 'Version' do
 
   describe '#>' do
     context 'when versions have equal length' do
-      it 'is true for larger version' do
+      it 'compares correctly' do
         expect(Version.new('1.3')).to be > Version.new('1.2')
-      end
-
-      it 'is false for smaller version' do
         expect(Version.new('1.2')).to_not be > Version.new('1.3')
-      end
-
-      it 'is false for equal versions' do
         expect(Version.new('1.2')).to_not be > Version.new('1.2')
       end
     end
 
     context 'when versions have different length' do
-      it 'is true for larger version' do
+      it 'compares correctly' do
         expect(Version.new('1.3.1')).to be > Version.new('1.3')
-      end
-
-      it 'is false for smaller version' do
         expect(Version.new('1.3')).to_not be > Version.new('1.3.1')
-      end
-
-      it 'is false for equal versions' do
         expect(Version.new('1.3')).to_not be > Version.new('1.3.0')
       end
     end
@@ -87,29 +54,17 @@ RSpec.describe 'Version' do
 
   describe '#<=' do
     context 'when versions have equal length' do
-      it 'is true for smaller version' do
+      it 'compares correctly' do
         expect(Version.new('1.2')).to be <= Version.new('1.3')
-      end
-
-      it 'is false for larger version' do
         expect(Version.new('1.3')).to_not be <= Version.new('1.2')
-      end
-
-      it 'is true for equal versions' do
         expect(Version.new('1.2')).to be <= Version.new('1.2')
       end
     end
 
     context 'when versions have different length' do
-      it 'is true for smaller version' do
+      it 'compares correctly' do
         expect(Version.new('1.3')).to be <= Version.new('1.3.1')
-      end
-
-      it 'is false for larger version' do
         expect(Version.new('1.3.1')).to_not be <= Version.new('1.3')
-      end
-
-      it 'is true for equal versions' do
         expect(Version.new('1.3')).to be <= Version.new('1.3.0')
       end
     end
@@ -117,29 +72,17 @@ RSpec.describe 'Version' do
 
   describe '#>=' do
     context 'when versions have equal length' do
-      it 'is true for larger version' do
+      it 'compares correctly' do
         expect(Version.new('1.3')).to be >= Version.new('1.2')
-      end
-
-      it 'is false for smaller version' do
         expect(Version.new('1.2')).to_not be >= Version.new('1.3')
-      end
-
-      it 'is true for equal versions' do
         expect(Version.new('1.2')).to be >= Version.new('1.2')
       end
     end
 
     context 'when versions have different length' do
-      it 'is true for larger version' do
+      it 'compares correctly' do
         expect(Version.new('1.3.1')).to be >= Version.new('1.3')
-      end
-
-      it 'is false for smaller version' do
         expect(Version.new('1.3')).to_not be >= Version.new('1.3.1')
-      end
-
-      it 'is true for equal versions' do
         expect(Version.new('1.3')).to be >= Version.new('1.3.0')
       end
     end
@@ -171,30 +114,18 @@ RSpec.describe 'Version' do
 
   describe '#<=>' do
     context 'when versions have equal length' do
-      it 'compares smaller with larger version' do
+      it 'compares correctly' do
         expect(Version.new('1.2') <=> Version.new('1.3')).to eq -1
-      end
-
-      it 'compares larger with smaller version' do
         expect(Version.new('1.3') <=> Version.new('1.2')).to eq 1
-      end
-
-      it 'compares equal versions' do
         version = Version.new('1.2')
         expect(version <=> Version.new('1.2')).to eq 0
       end
     end
 
     context 'when versions have different length' do
-      it 'compares smaller with larger version' do
+      it 'compares correctly' do
         expect(Version.new('1.3') <=> Version.new('1.3.1')).to eq -1
-      end
-
-      it 'compares larger with smaller version' do
         expect(Version.new('1.3.1') <=> Version.new('1.3')).to eq 1
-      end
-
-      it 'compares equal versions' do
         expect(Version.new('1.3') <=> Version.new('1.3.0')).to eq 0
       end
     end
@@ -224,11 +155,8 @@ RSpec.describe 'Version' do
 
   describe '#components' do
     context 'when no optional argument is given' do
-      it 'gets simple version' do
+      it 'gets version' do
         expect(Version.new('1.2').components).to eq([1, 2])
-      end
-
-      it 'gets version ending with zero' do
         expect(Version.new('1.2.0').components).to eq([1, 2])
       end
 
@@ -241,15 +169,9 @@ RSpec.describe 'Version' do
     end
 
     context 'when optional argument is given' do
-      it 'gets simple version with fewer elements' do
+      it 'gets simple version' do
         expect(Version.new('1.2.3').components(5)).to eq([1, 2, 3, 0, 0])
-      end
-
-      it 'gets simple version with more elements' do
         expect(Version.new('1.2.3').components(2)).to eq([1, 2])
-      end
-
-      it 'gets simple version with equal amount of elements' do
         expect(Version.new('1.2.3').components(3)).to eq([1, 2, 3])
       end
     end
@@ -259,6 +181,10 @@ RSpec.describe 'Version' do
     describe '#initialize' do
       it 'does not raise error with valid versions' do
         expect { Version::Range.new('1.2.3', '1.2.4') }.to_not raise_error
+        start_version = Version.new('1.2.3')
+        end_version = Version.new('1.2.4')
+        expect { Version::Range.new(start_version, end_version) }
+        .to_not raise_error
       end
 
       it 'raises error with invalid versions' do
