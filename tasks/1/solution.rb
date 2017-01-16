@@ -1,10 +1,20 @@
-TEMPERATURE_CONVERSION_CHART = {
-  'C' => { 'C' => [1, 0], 'F' => [1.8, 32], 'K' => [1, 273.15] },
-  'F' => { 'C' => [0.55555, -17.77], 'F' => [1, 0], 'K' => [0.55555, 255.37] },
-  'K' => { 'C' => [1, -273.15], 'F' => [1.8, -459.67], 'K' => [1, 0] },
-}
+def degrees_to_celsius(degrees, from_units)
+  case from_units
+  when 'C' then degrees
+  when 'K' then degrees - 273.15
+  when 'F' then (degrees - 32) / 1.8
+  end
+end
 
-MELTING_AND_BOILING_POINTS_IN_CELSIUS = {
+def degrees_from_celsius(degrees, to_units)
+  case to_units
+  when 'C' then degrees
+  when 'K' then degrees + 273.15
+  when 'F' then degrees * 1.8 + 32
+  end
+end
+
+MELTING_AND_BOILING_POINTS = {
   'water' => { melting_point: 0, boiling_point: 100 },
   'ethanol' => { melting_point: -114, boiling_point: 78.37 },
   'gold' => { melting_point: 1064, boiling_point: 2700 },
@@ -13,16 +23,14 @@ MELTING_AND_BOILING_POINTS_IN_CELSIUS = {
 }
 
 def convert_between_temperature_units(degrees, input_unit, output_unit)
-  slope, intercept = TEMPERATURE_CONVERSION_CHART[input_unit][output_unit]
-  (degrees * slope + intercept)
+  degrees_in_celsius = degrees_to_celsius(from_degrees, input_unit)
+  degrees_from_celsius(degrees_in_celsius, output_unit)
 end
 
 def melting_point_of_substance(substance, unit) 
-  melting_pt = MELTING_AND_BOILING_POINTS_IN_CELSIUS[substance][:melting_point]
-  convert_between_temperature_units(melting_pt, 'C', unit)
+  degrees_from_celsius(SUBSTANCES[substance][:melting_point], unit)
 end
 
 def boiling_point_of_substance(substance, unit)
-  boiling_pt = MELTING_AND_BOILING_POINTS_IN_CELSIUS[substance][:boiling_point]
-  convert_between_temperature_units(boiling_pt, 'C', unit)
+  degrees_from_celsius(MELTING_AND_BOILING_POINTS[substance][:boiling_point], unit)
 end
